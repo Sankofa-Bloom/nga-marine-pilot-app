@@ -10,6 +10,12 @@ import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
 import Scheduling from "./pages/Scheduling";
+import Vessels from "./pages/Vessels";
+import Tasks from "./pages/Tasks";
+import Finance from "./pages/Finance";
+import Reports from "./pages/Reports";
+import Documents from "./pages/Documents";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/AppSidebar';
+import AppSidebar from '@/components/AppSidebar';
 import { Separator } from '@/components/ui/separator';
 
 interface DashboardLayoutProps {

@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Ship, 
@@ -16,6 +16,7 @@ import {
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const stats = [
     {
@@ -188,19 +189,31 @@ const Dashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all">
+            <button 
+              onClick={() => navigate('/employees')}
+              className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all"
+            >
               <Users className="h-6 w-6 mb-2" />
               <span className="text-sm font-medium">Add Employee</span>
             </button>
-            <button className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all">
+            <button 
+              onClick={() => navigate('/scheduling')}
+              className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all"
+            >
               <Calendar className="h-6 w-6 mb-2" />
               <span className="text-sm font-medium">Schedule Crew</span>
             </button>
-            <button className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all">
+            <button 
+              onClick={() => navigate('/reports')}
+              className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all"
+            >
               <FileText className="h-6 w-6 mb-2" />
               <span className="text-sm font-medium">Create Report</span>
             </button>
-            <button className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all">
+            <button 
+              onClick={() => navigate('/finance')}
+              className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all"
+            >
               <DollarSign className="h-6 w-6 mb-2" />
               <span className="text-sm font-medium">Track Expenses</span>
             </button>

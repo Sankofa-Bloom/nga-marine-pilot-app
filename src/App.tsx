@@ -8,6 +8,8 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import LoginForm from "./components/LoginForm";
 import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import Employees from "./pages/Employees";
+import Scheduling from "./pages/Scheduling";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,18 +48,12 @@ const AppContent = () => {
         } />
         <Route path="/employees" element={
           <ProtectedRoute>
-            <div className="text-center text-maritime-navy">
-              <h2 className="text-2xl font-bold mb-4">Employee Management</h2>
-              <p>Coming soon - Employee profiles, search, and management features</p>
-            </div>
+            <Employees />
           </ProtectedRoute>
         } />
         <Route path="/scheduling" element={
           <ProtectedRoute>
-            <div className="text-center text-maritime-navy">
-              <h2 className="text-2xl font-bold mb-4">Scheduling & Rostering</h2>
-              <p>Coming soon - Shift management and crew scheduling</p>
-            </div>
+            <Scheduling />
           </ProtectedRoute>
         } />
         <Route path="/vessels" element={

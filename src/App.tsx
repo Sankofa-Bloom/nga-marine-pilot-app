@@ -64,50 +64,32 @@ const AppContent = () => {
         } />
         <Route path="/vessels" element={
           <ProtectedRoute>
-            <div className="text-center text-maritime-navy">
-              <h2 className="text-2xl font-bold mb-4">Vessel Management</h2>
-              <p>Coming soon - Fleet overview and maintenance tracking</p>
-            </div>
+            <Vessels />
           </ProtectedRoute>
         } />
         <Route path="/tasks" element={
           <ProtectedRoute>
-            <div className="text-center text-maritime-navy">
-              <h2 className="text-2xl font-bold mb-4">Task Management</h2>
-              <p>Coming soon - Work orders and task assignments</p>
-            </div>
+            <Tasks />
           </ProtectedRoute>
         } />
         <Route path="/finance" element={
           <ProtectedRoute>
-            <div className="text-center text-maritime-navy">
-              <h2 className="text-2xl font-bold mb-4">Finance Management</h2>
-              <p>Coming soon - Expense tracking and budget monitoring</p>
-            </div>
+            <Finance />
           </ProtectedRoute>
         } />
         <Route path="/reports" element={
           <ProtectedRoute>
-            <div className="text-center text-maritime-navy">
-              <h2 className="text-2xl font-bold mb-4">Reports & Analytics</h2>
-              <p>Coming soon - Comprehensive reporting dashboard</p>
-            </div>
+            <Reports />
           </ProtectedRoute>
         } />
         <Route path="/documents" element={
           <ProtectedRoute>
-            <div className="text-center text-maritime-navy">
-              <h2 className="text-2xl font-bold mb-4">Document Management</h2>
-              <p>Coming soon - Digital document storage and retrieval</p>
-            </div>
+            <Documents />
           </ProtectedRoute>
         } />
         <Route path="/admin/settings" element={
           <ProtectedRoute>
-            <div className="text-center text-maritime-navy">
-              <h2 className="text-2xl font-bold mb-4">System Settings</h2>
-              <p>Coming soon - Administrative configuration panel</p>
-            </div>
+            <Settings />
           </ProtectedRoute>
         } />
         <Route path="*" element={<NotFound />} />

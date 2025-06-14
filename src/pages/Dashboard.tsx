@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -11,7 +12,8 @@ import {
   CheckSquare, 
   AlertTriangle,
   TrendingUp,
-  FileText
+  FileText,
+  BarChart3
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -189,34 +191,70 @@ const Dashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button 
+            <Button 
+              variant="outline"
               onClick={() => navigate('/employees')}
-              className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all"
+              className="flex flex-col items-center p-6 h-auto bg-maritime-foam hover:bg-maritime-wave hover:text-white transition-all"
             >
               <Users className="h-6 w-6 mb-2" />
-              <span className="text-sm font-medium">Add Employee</span>
-            </button>
-            <button 
+              <span className="text-sm font-medium">Manage Employees</span>
+            </Button>
+            <Button 
+              variant="outline"
               onClick={() => navigate('/scheduling')}
-              className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all"
+              className="flex flex-col items-center p-6 h-auto bg-maritime-foam hover:bg-maritime-wave hover:text-white transition-all"
             >
               <Calendar className="h-6 w-6 mb-2" />
               <span className="text-sm font-medium">Schedule Crew</span>
-            </button>
-            <button 
-              onClick={() => navigate('/reports')}
-              className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all"
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/vessels')}
+              className="flex flex-col items-center p-6 h-auto bg-maritime-foam hover:bg-maritime-wave hover:text-white transition-all"
             >
-              <FileText className="h-6 w-6 mb-2" />
-              <span className="text-sm font-medium">Create Report</span>
-            </button>
-            <button 
+              <Ship className="h-6 w-6 mb-2" />
+              <span className="text-sm font-medium">Manage Fleet</span>
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/tasks')}
+              className="flex flex-col items-center p-6 h-auto bg-maritime-foam hover:bg-maritime-wave hover:text-white transition-all"
+            >
+              <CheckSquare className="h-6 w-6 mb-2" />
+              <span className="text-sm font-medium">Track Tasks</span>
+            </Button>
+            <Button 
+              variant="outline"
               onClick={() => navigate('/finance')}
-              className="flex flex-col items-center p-4 bg-maritime-foam rounded-lg hover:bg-maritime-wave hover:text-white transition-all"
+              className="flex flex-col items-center p-6 h-auto bg-maritime-foam hover:bg-maritime-wave hover:text-white transition-all"
             >
               <DollarSign className="h-6 w-6 mb-2" />
               <span className="text-sm font-medium">Track Expenses</span>
-            </button>
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/reports')}
+              className="flex flex-col items-center p-6 h-auto bg-maritime-foam hover:bg-maritime-wave hover:text-white transition-all"
+            >
+              <BarChart3 className="h-6 w-6 mb-2" />
+              <span className="text-sm font-medium">View Reports</span>
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/documents')}
+              className="flex flex-col items-center p-6 h-auto bg-maritime-foam hover:bg-maritime-wave hover:text-white transition-all"
+            >
+              <FileText className="h-6 w-6 mb-2" />
+              <span className="text-sm font-medium">Manage Documents</span>
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/admin/settings')}
+              className="flex flex-col items-center p-6 h-auto bg-maritime-foam hover:bg-maritime-wave hover:text-white transition-all"
+            >
+              <AlertTriangle className="h-6 w-6 mb-2" />
+              <span className="text-sm font-medium">System Settings</span>
+            </Button>
           </div>
         </CardContent>
       </Card>

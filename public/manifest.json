@@ -1,0 +1,51 @@
+
+{
+  "name": "NGA Marine Services - Employee Management",
+  "short_name": "NGA Marine",
+  "description": "Digital transformation for marine services operations in Douala, Cameroon",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your maritime operations overview",
+      "url": "/",
+      "icons": [{"src": "/icon-192x192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Employees",
+      "short_name": "Employees", 
+      "description": "Manage your crew members",
+      "url": "/employees",
+      "icons": [{"src": "/icon-192x192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Vessels",
+      "short_name": "Vessels",
+      "description": "Manage your fleet",
+      "url": "/vessels", 
+      "icons": [{"src": "/icon-192x192.png", "sizes": "192x192"}]
+    }
+  ]
+}

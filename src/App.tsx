@@ -6,7 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import LoginForm from "./components/LoginForm";
-import DashboardLayout from "./components/DashboardLayout";
+import MobileLayout from "./components/MobileLayout";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
 import Scheduling from "./pages/Scheduling";
@@ -25,7 +26,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
           <div className="w-16 h-16 bg-maritime-blue rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-2xl text-white font-bold">NGA</span>
@@ -40,7 +41,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <LoginForm />;
   }
 
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <>
+      <PWAInstallPrompt />
+      <MobileLayout>{children}</MobileLayout>
+    </>
+  );
 };
 
 const AppContent = () => {

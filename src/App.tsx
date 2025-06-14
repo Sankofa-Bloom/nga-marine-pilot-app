@@ -5,8 +5,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { useIsMobile } from "./hooks/use-mobile";
 import LoginForm from "./components/LoginForm";
 import MobileLayout from "./components/MobileLayout";
+import DashboardLayout from "./components/DashboardLayout";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
@@ -23,6 +25,7 @@ const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
+  const isMobile = useIsMobile();
 
   if (isLoading) {
     return (
@@ -43,8 +46,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <PWAInstallPrompt />
-      <MobileLayout>{children}</MobileLayout>
+      {isMobile && <PWAInstallPrompt />}
+      {isMobile ? (
+        <MobileLayout>{children}</MobileLayout>
+      ) : (
+        <DashboardLayout>{children}</DashboardLayout>
+      )}
     </>
   );
 };
@@ -94,6 +101,11 @@ const AppContent = () => {
           </ProtectedRoute>
         } />
         <Route path="/admin/settings" element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
           <ProtectedRoute>
             <Settings />
           </ProtectedRoute>

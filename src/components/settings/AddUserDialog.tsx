@@ -55,10 +55,7 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="rounded-lg p-0 max-w-lg border-4 border-pink-600 z-[9999] bg-white"
-        style={{ background: "#fff", zIndex: 9999 }}
-      >
+      <DialogContent>
         <DialogHeader className="pb-2 border-b">
           <DialogTitle className="text-lg font-semibold">Add New User</DialogTitle>
           <DialogDescription>

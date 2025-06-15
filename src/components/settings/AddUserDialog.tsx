@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
 
 type AddUserDialogProps = {
   open: boolean;
@@ -20,10 +21,12 @@ type AddUserDialogProps = {
   loading: boolean;
 };
 
-export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: AddUserDialogProps) {
-  // Debug log to ensure component mounts and open state is received
-  console.log("AddUserDialog rendered", { open });
-
+export default function AddUserDialog({
+  open,
+  onOpenChange,
+  onAdd,
+  loading,
+}: AddUserDialogProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"admin" | "manager" | "employee">("employee");
@@ -58,13 +61,7 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="border-4 border-fuchsia-500 bg-white"
-        style={{ zIndex: 9999, minHeight: 220 }}
-      >
-        <div className="absolute top-2 left-2 bg-fuchsia-200 px-2 py-1 rounded text-xs text-fuchsia-900 z-50">
-          DEBUG: AddUserDialog visible!
-        </div>
+      <DialogContent>
         <DialogHeader className="pb-2 border-b">
           <DialogTitle className="text-lg font-semibold">Add New User</DialogTitle>
           <DialogDescription>
@@ -72,40 +69,70 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
           </DialogDescription>
         </DialogHeader>
         <div className="p-6 space-y-4">
-          <Input
-            placeholder="Name"
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
-          <Input
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
-          <select
-            className="w-full border border-input bg-background px-3 py-2 rounded text-sm focus:outline-none"
-            value={role}
-            onChange={e => setRole(e.target.value as any)}
-          >
-            <option value="employee">Employee</option>
-            <option value="manager">Manager</option>
-            <option value="admin">Admin</option>
-          </select>
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
-          <Input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirm}
-            onChange={e => setConfirm(e.target.value)}
-          />
+          <div>
+            <Label htmlFor="name" className="text-black mb-1 block">
+              Name
+            </Label>
+            <Input
+              id="name"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="email" className="text-black mb-1 block">
+              Email
+            </Label>
+            <Input
+              id="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="role" className="text-black mb-1 block">
+              Role
+            </Label>
+            <select
+              id="role"
+              className="w-full border border-input bg-background px-3 py-2 rounded text-sm focus:outline-none"
+              value={role}
+              onChange={(e) => setRole(e.target.value as any)}
+            >
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div>
+            <Label htmlFor="password" className="text-black mb-1 block">
+              Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="confirm" className="text-black mb-1 block">
+              Confirm Password
+            </Label>
+            <Input
+              id="confirm"
+              type="password"
+              placeholder="Confirm Password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+            />
+          </div>
         </div>
-        <DialogFooter className="bg-muted px-6 py-4 rounded-b-lg flex flex-row justify-end gap-2">
-          <Button onClick={handleAdd} disabled={loading} className="bg-maritime-blue hover:bg-maritime-ocean">
+        <DialogFooter className="px-6 py-4 flex flex-row justify-end gap-2">
+          <Button onClick={handleAdd} disabled={loading} className="bg-maritime-blue hover:bg-maritime-ocean text-white">
             Add User
           </Button>
           <DialogClose asChild>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -77,6 +76,7 @@ export default function AddUserDialog({
               id="name"
               placeholder="Name"
               value={name}
+              className="border-black"
               onChange={(e) => setName(e.target.value)}
             />
           </div>
@@ -88,6 +88,7 @@ export default function AddUserDialog({
               id="email"
               placeholder="Email"
               value={email}
+              className="border-black"
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
@@ -97,7 +98,7 @@ export default function AddUserDialog({
             </Label>
             <select
               id="role"
-              className="w-full border border-input bg-background px-3 py-2 rounded text-sm focus:outline-none"
+              className="w-full border border-black bg-background px-3 py-2 rounded text-sm focus:outline-none"
               value={role}
               onChange={(e) => setRole(e.target.value as any)}
             >
@@ -115,6 +116,7 @@ export default function AddUserDialog({
               type="password"
               placeholder="Password"
               value={password}
+              className="border-black"
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
@@ -127,6 +129,7 @@ export default function AddUserDialog({
               type="password"
               placeholder="Confirm Password"
               value={confirm}
+              className="border-black"
               onChange={(e) => setConfirm(e.target.value)}
             />
           </div>

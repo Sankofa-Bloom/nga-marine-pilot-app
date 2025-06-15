@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,12 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
   const [role, setRole] = useState<"admin" | "manager" | "employee">("employee");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+
+  useEffect(() => {
+    if (open) {
+      console.log("AddUserDialog: Dialog is now open");
+    }
+  }, [open]);
 
   const handleAdd = async () => {
     if (!name.trim() || !email.trim() || !password || !confirm) {
@@ -48,9 +55,15 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-lg p-0 max-w-lg">
+      <DialogContent
+        className="rounded-lg p-0 max-w-lg border-4 border-pink-600 z-[9999] bg-white"
+        style={{ background: "#fff", zIndex: 9999 }}
+      >
         <DialogHeader className="pb-2 border-b">
           <DialogTitle className="text-lg font-semibold">Add New User</DialogTitle>
+          <DialogDescription>
+            Enter user details and select their role.
+          </DialogDescription>
         </DialogHeader>
         <div className="p-6 space-y-4">
           <Input

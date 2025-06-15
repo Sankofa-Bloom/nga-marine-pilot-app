@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,9 @@ import {
   Calendar,
   FileText
 } from 'lucide-react';
+import AddEmployeeDialog from "@/components/employees/AddEmployeeDialog";
+import ViewEmployeeDialog from "@/components/employees/ViewEmployeeDialog";
+import EditEmployeeDialog from "@/components/employees/EditEmployeeDialog";
 
 interface Employee {
   id: number;
@@ -33,6 +35,10 @@ interface Employee {
 const Employees = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDepartment, setFilterDepartment] = useState('all');
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
   const employees: Employee[] = [
     {
@@ -104,6 +110,16 @@ const Employees = () => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  const openViewDialog = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setViewDialogOpen(true);
+  };
+
+  const openEditDialog = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setEditDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header Section */}
@@ -112,7 +128,10 @@ const Employees = () => {
           <h1 className="text-3xl font-bold text-maritime-navy">Employee Management</h1>
           <p className="text-maritime-anchor">Manage your crew members and staff</p>
         </div>
-        <Button className="bg-maritime-blue hover:bg-maritime-ocean">
+        <Button
+          className="bg-maritime-blue hover:bg-maritime-ocean"
+          onClick={() => setAddDialogOpen(true)}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Employee
         </Button>
@@ -239,11 +258,20 @@ const Employees = () => {
                 <span className="text-maritime-anchor">Joined {employee.joinDate}</span>
               </div>
               <div className="flex space-x-2 pt-2">
-                <Button size="sm" variant="outline" className="flex-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => openViewDialog(employee)}
+                >
                   <FileText className="w-4 h-4 mr-1" />
                   View
                 </Button>
-                <Button size="sm" className="flex-1 bg-maritime-blue hover:bg-maritime-ocean">
+                <Button
+                  size="sm"
+                  className="flex-1 bg-maritime-blue hover:bg-maritime-ocean"
+                  onClick={() => openEditDialog(employee)}
+                >
                   Edit
                 </Button>
               </div>
@@ -260,6 +288,10 @@ const Employees = () => {
           </CardContent>
         </Card>
       )}
+      {/* Dialogs */}
+      <AddEmployeeDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />
+      <ViewEmployeeDialog open={viewDialogOpen} onOpenChange={setViewDialogOpen} employee={selectedEmployee} />
+      <EditEmployeeDialog open={editDialogOpen} onOpenChange={setEditDialogOpen} employee={selectedEmployee} />
     </div>
   );
 };

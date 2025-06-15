@@ -17,6 +17,10 @@ import {
   FileText,
   Ship
 } from 'lucide-react';
+import CreateTaskDialog from '@/components/tasks/CreateTaskDialog';
+import TaskDetailsDialog from '@/components/tasks/TaskDetailsDialog';
+import AssignTaskDialog from '@/components/tasks/AssignTaskDialog';
+import UpdateTaskDialog from '@/components/tasks/UpdateTaskDialog';
 
 const Tasks = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -109,37 +113,44 @@ const Tasks = () => {
     return matchesSearch && matchesFilter;
   });
 
-  // Handlers to demonstrate button functionality (please link to real modals/dialogs later)
+  // Dialog controls
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openDetails, setOpenDetails] = useState(false);
+  const [openAssign, setOpenAssign] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
+
+  // Handlers to open dialogs
   const handleCreateTask = () => {
-    toast({
-      title: "Create Task",
-      description: "Create Task functionality clicked",
-    });
+    setOpenCreate(true);
   };
 
   const handleViewDetails = (taskId: number) => {
-    toast({
-      title: "View Details",
-      description: `View Details for task #${taskId}`,
-    });
+    const task = tasks.find(t => t.id === taskId);
+    setSelectedTask(task || null);
+    setOpenDetails(true);
   };
 
   const handleAssign = (taskId: number) => {
-    toast({
-      title: "Assign Task", 
-      description: `Assign clicked for task #${taskId}`,
-    });
+    const task = tasks.find(t => t.id === taskId);
+    setSelectedTask(task || null);
+    setOpenAssign(true);
   };
 
   const handleUpdate = (taskId: number) => {
-    toast({
-      title: "Update Task",
-      description: `Update clicked for task #${taskId}`,
-    });
+    const task = tasks.find(t => t.id === taskId);
+    setSelectedTask(task || null);
+    setOpenUpdate(true);
   };
 
   return (
     <div className="space-y-6">
+      {/* Dialogs for Create/View/Assign/Update */}
+      <CreateTaskDialog open={openCreate} onOpenChange={setOpenCreate} />
+      <TaskDetailsDialog open={openDetails} onOpenChange={setOpenDetails} task={selectedTask} />
+      <AssignTaskDialog open={openAssign} onOpenChange={setOpenAssign} task={selectedTask} />
+      <UpdateTaskDialog open={openUpdate} onOpenChange={setOpenUpdate} task={selectedTask} />
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

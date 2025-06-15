@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -93,7 +92,7 @@ export function useSystemUsers() {
       toast({ 
         title: "User created, pending email confirmation.",
         description: "User will show up after email is confirmed.",
-        variant: "success",
+        variant: "default", // changed from "success" to "default"
       });
       setLoading(false);
       return true;
@@ -118,7 +117,7 @@ export function useSystemUsers() {
     toast({
       title: "User added",
       description: "User has been created.",
-      variant: "success",
+      variant: "default", // changed from "success" to "default"
     });
     await fetchUsers();
     setLoading(false);
@@ -162,7 +161,7 @@ export function useSystemUsers() {
     toast({
       title: "User updated",
       description: "User profile and role have been updated.",
-      variant: "success",
+      variant: "default", // changed from "success" to "default"
     });
     await fetchUsers();
     setLoading(false);

@@ -1,6 +1,13 @@
 
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
@@ -41,11 +48,11 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add New User</DialogTitle>
+      <DialogContent className="rounded-lg p-0 max-w-lg">
+        <DialogHeader className="pb-2 border-b">
+          <DialogTitle className="text-lg font-semibold">Add New User</DialogTitle>
         </DialogHeader>
-        <div className="space-y-3 py-2">
+        <div className="p-6 space-y-4">
           <Input
             placeholder="Name"
             value={name}
@@ -57,7 +64,7 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
             onChange={e => setEmail(e.target.value)}
           />
           <select
-            className="w-full border px-2 py-2 rounded"
+            className="w-full border border-input bg-background px-3 py-2 rounded text-sm focus:outline-none"
             value={role}
             onChange={e => setRole(e.target.value as any)}
           >
@@ -78,12 +85,12 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
             onChange={e => setConfirm(e.target.value)}
           />
         </div>
-        <DialogFooter>
+        <DialogFooter className="bg-muted px-6 py-4 rounded-b-lg flex flex-row justify-end gap-2">
           <Button onClick={handleAdd} disabled={loading} className="bg-maritime-blue hover:bg-maritime-ocean">
             Add User
           </Button>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" type="button">Cancel</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

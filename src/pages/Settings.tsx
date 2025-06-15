@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,9 +19,18 @@ import {
   Users,
   Lock
 } from 'lucide-react';
+import { useSystemUsers } from "@/hooks/useSystemUsers";
+import AddUserDialog from "@/components/settings/AddUserDialog";
+import EditUserDialog from "@/components/settings/EditUserDialog";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('general');
+
+  // User Management states/hooks
+  const { users: systemUsers, loading: usersLoading, addUser, editUser } = useSystemUsers();
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
 
   const settingsTabs = [
     { id: 'general', label: 'General', icon: SettingsIcon },
@@ -31,33 +39,6 @@ const Settings = () => {
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'integrations', label: 'Integrations', icon: Globe },
     { id: 'backup', label: 'Backup & Export', icon: Database }
-  ];
-
-  const systemUsers = [
-    {
-      id: 1,
-      name: "Jean Paul Mbarga",
-      email: "jp.mbarga@ngamarine.com",
-      role: "admin",
-      status: "active",
-      lastLogin: "2024-01-12 14:30"
-    },
-    {
-      id: 2,
-      name: "Marie Douala",
-      email: "m.douala@ngamarine.com",
-      role: "manager",
-      status: "active",
-      lastLogin: "2024-01-12 09:15"
-    },
-    {
-      id: 3,
-      name: "Paul Yaounde",
-      email: "p.yaounde@ngamarine.com",
-      role: "user",
-      status: "inactive",
-      lastLogin: "2024-01-10 16:45"
-    }
   ];
 
   const getRoleColor = (role: string) => {
@@ -185,7 +166,7 @@ const Settings = () => {
                     <CardTitle>User Management</CardTitle>
                     <CardDescription>Manage system users and permissions</CardDescription>
                   </div>
-                  <Button className="bg-maritime-blue hover:bg-maritime-ocean">
+                  <Button className="bg-maritime-blue hover:bg-maritime-ocean" onClick={() => setAddDialogOpen(true)}>
                     <User className="h-4 w-4 mr-2" />
                     Add User
                   </Button>
@@ -193,6 +174,12 @@ const Settings = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
+                  {usersLoading && (
+                    <div className="text-maritime-anchor text-sm">Loading users...</div>
+                  )}
+                  {systemUsers.length === 0 && !usersLoading && (
+                    <div className="text-maritime-anchor">No users found.</div>
+                  )}
                   {systemUsers.map((user) => (
                     <div key={user.id} className="flex items-center justify-between p-4 border border-maritime-foam rounded-lg">
                       <div className="flex items-center space-x-4">
@@ -200,9 +187,11 @@ const Settings = () => {
                           <User className="h-5 w-5 text-white" />
                         </div>
                         <div>
-                          <div className="font-medium text-maritime-navy">{user.name}</div>
+                          <div className="font-medium text-maritime-navy">{user.name || user.email}</div>
                           <div className="text-sm text-maritime-anchor">{user.email}</div>
-                          <div className="text-xs text-maritime-anchor">Last login: {user.lastLogin}</div>
+                          {user.lastLogin && (
+                            <div className="text-xs text-maritime-anchor">Last login: {user.lastLogin}</div>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -213,9 +202,15 @@ const Settings = () => {
                           {user.status}
                         </Badge>
                         <div className="flex space-x-1">
-                          <Button size="sm" variant="outline">Edit</Button>
-                          <Button size="sm" variant="outline">
-                            <Lock className="h-4 w-4" />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setEditDialogOpen(true);
+                            }}
+                          >
+                            Edit
                           </Button>
                         </div>
                       </div>
@@ -224,6 +219,8 @@ const Settings = () => {
                 </div>
               </CardContent>
             </Card>
+            <AddUserDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} onAdd={addUser} loading={usersLoading} />
+            <EditUserDialog open={editDialogOpen} onOpenChange={setEditDialogOpen} user={selectedUser} onEdit={editUser} loading={usersLoading} />
           </div>
         );
 

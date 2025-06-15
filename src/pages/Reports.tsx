@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,10 +15,20 @@ import {
   DollarSign,
   PieChart,
   Activity,
-  Clock
+  Clock,
+  Share2
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import GenerateReportDialog from '@/components/reports/GenerateReportDialog';
+import { toast } from 'sonner';
+import jsPDF from 'jspdf';
 
 const Reports = () => {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+  const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<{name: string, category: string} | null>(null);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
 
@@ -142,18 +151,63 @@ const Reports = () => {
     return matchesSearch && matchesFilter;
   });
 
+  const handleOpenGenerateDialog = (template: {name: string, category: string} | null = null) => {
+    if (!isAdmin) {
+      toast.error('Only admins can generate reports.');
+      return;
+    }
+    setSelectedTemplate(template);
+    setIsGenerateDialogOpen(true);
+  }
+
+  const handleDownload = (report: { name: string }) => {
+    toast.info(`Preparing download for "${report.name}"...`);
+    const pdf = new jsPDF();
+    pdf.text(`This is a downloaded report for "${report.name}".`, 10, 10);
+    pdf.text('This is a placeholder document.', 10, 20);
+    pdf.save(`${report.name.replace(/\s/g, '_')}.pdf`);
+    toast.success('Report downloaded.');
+  };
+  
+  const handleView = (report: { name: string }) => {
+    toast.info(`Opening "${report.name}" in a new tab...`);
+    const pdf = new jsPDF();
+    pdf.text(`Viewing report: "${report.name}".`, 10, 10);
+    pdf.text('This is a placeholder document.', 10, 20);
+    pdf.output('dataurlnewwindow');
+  };
+  
+  const handleShare = (report: { id: number }) => {
+    const reportUrl = `${window.location.origin}/reports/${report.id}`;
+    navigator.clipboard.writeText(reportUrl).then(() => {
+      toast.success('Report link copied to clipboard!');
+    }).catch(() => {
+      toast.error('Failed to copy link.');
+    });
+  };
+
   return (
     <div className="space-y-6">
+      <GenerateReportDialog 
+        isOpen={isGenerateDialogOpen}
+        setIsOpen={setIsGenerateDialogOpen}
+        template={selectedTemplate}
+      />
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-maritime-navy">Reports & Analytics</h1>
           <p className="text-maritime-anchor">Generate insights from your maritime operations</p>
         </div>
-        <Button className="bg-maritime-blue hover:bg-maritime-ocean">
-          <Plus className="h-4 w-4 mr-2" />
-          Create Report
-        </Button>
+        {isAdmin && (
+          <Button 
+            className="bg-maritime-blue hover:bg-maritime-ocean"
+            onClick={() => handleOpenGenerateDialog()}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Report
+          </Button>
+        )}
       </div>
 
       {/* Quick Stats */}
@@ -185,13 +239,15 @@ const Reports = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {reportTemplates.map((template, index) => (
-              <div key={index} className="p-4 border border-maritime-foam rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                <div className="flex items-center space-x-3 mb-3">
-                  <template.icon className="h-6 w-6 text-maritime-ocean" />
-                  <span className="font-medium text-maritime-navy">{template.name}</span>
+              <div key={index} className="p-4 border border-maritime-foam rounded-lg hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center space-x-3 mb-3">
+                    <template.icon className="h-6 w-6 text-maritime-ocean" />
+                    <span className="font-medium text-maritime-navy">{template.name}</span>
+                  </div>
+                  <p className="text-sm text-maritime-anchor mb-3">{template.description}</p>
                 </div>
-                <p className="text-sm text-maritime-anchor mb-3">{template.description}</p>
-                <Button size="sm" variant="outline" className="w-full">
+                <Button size="sm" variant="outline" className="w-full mt-auto" onClick={() => handleOpenGenerateDialog(template)}>
                   Generate Report
                 </Button>
               </div>
@@ -212,29 +268,32 @@ const Reports = () => {
             className="w-full pl-10 pr-4 py-2 border border-maritime-foam rounded-lg focus:ring-2 focus:ring-maritime-blue focus:border-transparent"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             variant={filterType === 'all' ? 'default' : 'outline'}
             onClick={() => setFilterType('all')}
-            className="bg-maritime-blue hover:bg-maritime-ocean"
+            className={filterType === 'all' ? 'bg-maritime-blue hover:bg-maritime-ocean' : ''}
           >
             All Types
           </Button>
           <Button
             variant={filterType === 'operational' ? 'default' : 'outline'}
             onClick={() => setFilterType('operational')}
+            className={filterType === 'operational' ? 'bg-maritime-blue hover:bg-maritime-ocean' : ''}
           >
             Operational
           </Button>
           <Button
             variant={filterType === 'financial' ? 'default' : 'outline'}
             onClick={() => setFilterType('financial')}
+            className={filterType === 'financial' ? 'bg-maritime-blue hover:bg-maritime-ocean' : ''}
           >
             Financial
           </Button>
           <Button
             variant={filterType === 'hr' ? 'default' : 'outline'}
             onClick={() => setFilterType('hr')}
+            className={filterType === 'hr' ? 'bg-maritime-blue hover:bg-maritime-ocean' : ''}
           >
             HR
           </Button>
@@ -249,9 +308,9 @@ const Reports = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {filteredReports.map((report) => (
-              <div key={report.id} className="flex items-center justify-between p-4 border border-maritime-foam rounded-lg">
-                <div className="flex-1">
+            {filteredReports.length > 0 ? filteredReports.map((report) => (
+              <div key={report.id} className="flex items-center justify-between p-4 border border-maritime-foam rounded-lg flex-wrap gap-4">
+                <div className="flex-1 min-w-[250px]">
                   <div className="flex items-center space-x-3">
                     <FileText className="h-5 w-5 text-maritime-ocean" />
                     <div>
@@ -259,7 +318,7 @@ const Reports = () => {
                       <div className="text-sm text-maritime-anchor">{report.description}</div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4 mt-2">
+                  <div className="flex items-center space-x-4 mt-2 flex-wrap gap-2">
                     <Badge className={getTypeColor(report.type)}>
                       {report.type}
                     </Badge>
@@ -275,19 +334,20 @@ const Reports = () => {
                   </div>
                 </div>
                 <div className="flex space-x-2">
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => handleDownload(report)}>
                     <Download className="h-4 w-4 mr-1" />
                     Download
                   </Button>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => handleView(report)}>
                     View
                   </Button>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => handleShare(report)}>
+                    <Share2 className="h-4 w-4 mr-1" />
                     Share
                   </Button>
                 </div>
               </div>
-            ))}
+            )) : <p className="text-maritime-anchor text-center py-4">No reports found.</p>}
           </div>
         </CardContent>
       </Card>

@@ -112,12 +112,16 @@ const ViewEmployeeDialog: React.FC<ViewEmployeeDialogProps> = ({
         </div>
         <DialogFooter className="pt-4">
           <DialogClose asChild>
-            <Button variant="outline">Close</Button>
+            <Button
+              variant="outline"
+              className="border-maritime-blue text-maritime-blue"
+            >
+              Close
+            </Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
-
 export default ViewEmployeeDialog;

@@ -203,11 +203,19 @@ const EditEmployeeDialog: React.FC<EditEmployeeDialogProps> = ({
           </div>
           <DialogFooter className="pt-4">
             <DialogClose asChild>
-              <Button variant="outline" type="button">
+              <Button
+                variant="outline"
+                type="button"
+                className="border-maritime-blue text-maritime-blue"
+              >
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={!isValid || isSubmitting}>
+            <Button
+              type="submit"
+              disabled={!isValid || isSubmitting}
+              className="bg-maritime-blue hover:bg-maritime-ocean text-white"
+            >
               Update
             </Button>
           </DialogFooter>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -109,6 +108,25 @@ const Tasks = () => {
     return matchesSearch && matchesFilter;
   });
 
+  // Handlers to demonstrate button functionality (please link to real modals/dialogs later)
+  const handleCreateTask = () => {
+    // For now, show a simple notification to confirm click works
+    window.toast?.success?.("Create Task clicked");
+    // or use console.log("Create Task clicked")
+  };
+
+  const handleViewDetails = (taskId: number) => {
+    window.toast?.info?.(`View Details for task #${taskId}`);
+  };
+
+  const handleAssign = (taskId: number) => {
+    window.toast?.info?.(`Assign clicked for task #${taskId}`);
+  };
+
+  const handleUpdate = (taskId: number) => {
+    window.toast?.info?.(`Update clicked for task #${taskId}`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -117,7 +135,10 @@ const Tasks = () => {
           <h1 className="text-3xl font-bold text-maritime-navy">Task Management</h1>
           <p className="text-maritime-anchor">Track work orders and assignments</p>
         </div>
-        <Button className="bg-maritime-blue hover:bg-maritime-ocean">
+        <Button
+          className="bg-maritime-blue text-white hover:bg-maritime-ocean"
+          onClick={handleCreateTask}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Create Task
         </Button>
@@ -186,25 +207,28 @@ const Tasks = () => {
           <Button
             variant={filterPriority === 'all' ? 'default' : 'outline'}
             onClick={() => setFilterPriority('all')}
-            className="bg-maritime-blue hover:bg-maritime-ocean"
+            className="bg-maritime-blue text-white hover:bg-maritime-ocean"
           >
             All Priority
           </Button>
           <Button
             variant={filterPriority === 'high' ? 'default' : 'outline'}
             onClick={() => setFilterPriority('high')}
+            className={filterPriority === 'high' ? 'bg-maritime-blue text-white hover:bg-maritime-ocean' : 'bg-maritime-foam text-maritime-navy hover:bg-sky-200'}
           >
             High
           </Button>
           <Button
             variant={filterPriority === 'medium' ? 'default' : 'outline'}
             onClick={() => setFilterPriority('medium')}
+            className={filterPriority === 'medium' ? 'bg-maritime-blue text-white hover:bg-maritime-ocean' : 'bg-maritime-foam text-maritime-navy hover:bg-sky-200'}
           >
             Medium
           </Button>
           <Button
             variant={filterPriority === 'low' ? 'default' : 'outline'}
             onClick={() => setFilterPriority('low')}
+            className={filterPriority === 'low' ? 'bg-maritime-blue text-white hover:bg-maritime-ocean' : 'bg-maritime-foam text-maritime-navy hover:bg-sky-200'}
           >
             Low
           </Button>
@@ -261,15 +285,31 @@ const Tasks = () => {
               )}
 
               <div className="flex space-x-2 pt-2">
-                <Button size="sm" variant="outline" className="flex-1">
+                {/* Use blue maritime background for all primary actions, except 'Cancel' if present */}
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="flex-1 bg-maritime-blue text-white hover:bg-maritime-ocean"
+                  onClick={() => handleViewDetails(task.id)}
+                >
                   <FileText className="h-4 w-4 mr-1" />
                   View Details
                 </Button>
-                <Button size="sm" variant="outline" className="flex-1">
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="flex-1 bg-maritime-blue text-white hover:bg-maritime-ocean"
+                  onClick={() => handleAssign(task.id)}
+                >
                   <User className="h-4 w-4 mr-1" />
                   Assign
                 </Button>
-                <Button size="sm" variant="outline" className="flex-1">
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="flex-1 bg-maritime-blue text-white hover:bg-maritime-ocean"
+                  onClick={() => handleUpdate(task.id)}
+                >
                   <Wrench className="h-4 w-4 mr-1" />
                   Update
                 </Button>

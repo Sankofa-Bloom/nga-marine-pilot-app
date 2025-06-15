@@ -146,7 +146,7 @@ const Dashboard = () => {
                 key={index}
                 variant="outline"
                 onClick={() => navigate(action.route)}
-                className="flex flex-col items-center p-4 h-auto bg-white hover:bg-maritime-foam border border-maritime-foam"
+                className="flex flex-col items-center p-4 h-auto"
               >
                 <div className={`w-8 h-8 ${action.color} rounded-lg flex items-center justify-center mb-2`}>
                   <action.icon className="h-4 w-4 text-white" />

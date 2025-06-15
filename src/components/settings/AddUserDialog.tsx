@@ -21,6 +21,9 @@ type AddUserDialogProps = {
 };
 
 export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: AddUserDialogProps) {
+  // Debug log to ensure component mounts and open state is received
+  console.log("AddUserDialog rendered", { open });
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"admin" | "manager" | "employee">("employee");
@@ -55,7 +58,14 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent
+        className="!border-4 !border-red-600 !bg-yellow-100"
+        style={{ minHeight: 200 }}
+      >
+        {/* VISUAL DEBUG */}
+        <div className="absolute top-2 right-2 bg-red-200 px-2 py-1 rounded text-xs text-red-800 z-50">
+          Debug: AddUserDialog
+        </div>
         <DialogHeader className="pb-2 border-b">
           <DialogTitle className="text-lg font-semibold">Add New User</DialogTitle>
           <DialogDescription>

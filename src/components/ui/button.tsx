@@ -19,6 +19,9 @@ const buttonVariants = cva(
           "bg-maritime-foam text-maritime-navy hover:bg-sky-200/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // NEW: Dialog-specific variants
+        dialogPrimary: "bg-maritime-blue hover:bg-maritime-ocean text-white border border-maritime-blue",
+        dialogSecondary: "border border-maritime-blue text-maritime-blue bg-white hover:bg-maritime-foam"
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -24,9 +24,9 @@ function CreateTaskDialog({ open, onOpenChange }: { open: boolean; onOpenChange:
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="dialogSecondary">Cancel</Button>
           </DialogClose>
-          <Button disabled>Create</Button>
+          <Button variant="dialogPrimary" disabled>Create</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

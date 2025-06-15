@@ -186,7 +186,11 @@ const GenerateReportDialog: React.FC<GenerateReportDialogProps> = ({ isOpen, set
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleGeneratePdf} disabled={isGenerating}>
+            <Button
+              onClick={handleGeneratePdf}
+              disabled={isGenerating}
+              variant="dialogPrimary"
+            >
               {isGenerating ? 'Generating...' : 'Generate PDF'}
             </Button>
           </DialogFooter>

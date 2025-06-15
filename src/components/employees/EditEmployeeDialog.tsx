@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import {
   Dialog,
@@ -204,9 +203,8 @@ const EditEmployeeDialog: React.FC<EditEmployeeDialogProps> = ({
           <DialogFooter className="pt-4">
             <DialogClose asChild>
               <Button
-                variant="outline"
+                variant="dialogSecondary"
                 type="button"
-                className="border-maritime-blue text-maritime-blue"
               >
                 Cancel
               </Button>
@@ -214,7 +212,7 @@ const EditEmployeeDialog: React.FC<EditEmployeeDialogProps> = ({
             <Button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="bg-maritime-blue hover:bg-maritime-ocean text-white"
+              variant="dialogPrimary"
             >
               Update
             </Button>

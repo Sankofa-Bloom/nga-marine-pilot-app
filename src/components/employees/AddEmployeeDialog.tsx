@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -162,9 +161,8 @@ const AddEmployeeDialog: React.FC<AddEmployeeDialogProps> = ({
           <DialogFooter className="pt-4">
             <DialogClose asChild>
               <Button
-                variant="outline"
+                variant="dialogSecondary"
                 type="button"
-                className="border-maritime-blue text-maritime-blue"
               >
                 Cancel
               </Button>
@@ -172,7 +170,7 @@ const AddEmployeeDialog: React.FC<AddEmployeeDialogProps> = ({
             <Button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="bg-maritime-blue hover:bg-maritime-ocean text-white"
+              variant="dialogPrimary"
             >
               Add
             </Button>

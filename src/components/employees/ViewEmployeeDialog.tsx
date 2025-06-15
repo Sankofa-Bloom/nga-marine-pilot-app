@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -113,8 +112,7 @@ const ViewEmployeeDialog: React.FC<ViewEmployeeDialogProps> = ({
         <DialogFooter className="pt-4">
           <DialogClose asChild>
             <Button
-              variant="outline"
-              className="border-maritime-blue text-maritime-blue"
+              variant="dialogSecondary"
             >
               Close
             </Button>

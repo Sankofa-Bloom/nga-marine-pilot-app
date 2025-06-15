@@ -41,9 +41,9 @@ function AssignTaskDialog({ open, onOpenChange, task }: { open: boolean; onOpenC
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="dialogSecondary">Cancel</Button>
           </DialogClose>
-          <Button disabled>Assign</Button>
+          <Button variant="dialogPrimary" disabled>Assign</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

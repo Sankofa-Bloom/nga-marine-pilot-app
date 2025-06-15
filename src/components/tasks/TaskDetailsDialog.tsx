@@ -44,7 +44,7 @@ function TaskDetailsDialog({ open, onOpenChange, task }: { open: boolean; onOpen
           <div><span className="font-semibold">Progress:</span> {task.progress}%</div>
         </div>
         <DialogClose asChild>
-          <Button variant="outline">Close</Button>
+          <Button variant="dialogSecondary">Close</Button>
         </DialogClose>
       </DialogContent>
     </Dialog>

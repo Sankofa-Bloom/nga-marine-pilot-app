@@ -38,9 +38,9 @@ function UpdateTaskDialog({ open, onOpenChange, task }: { open: boolean; onOpenC
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="dialogSecondary">Cancel</Button>
           </DialogClose>
-          <Button disabled>Update</Button>
+          <Button variant="dialogPrimary" disabled>Update</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

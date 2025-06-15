@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { toast } from '@/hooks/use-toast';
 import { 
   CheckSquare, 
   Plus, 
@@ -110,21 +111,31 @@ const Tasks = () => {
 
   // Handlers to demonstrate button functionality (please link to real modals/dialogs later)
   const handleCreateTask = () => {
-    // For now, show a simple notification to confirm click works
-    window.toast?.success?.("Create Task clicked");
-    // or use console.log("Create Task clicked")
+    toast({
+      title: "Create Task",
+      description: "Create Task functionality clicked",
+    });
   };
 
   const handleViewDetails = (taskId: number) => {
-    window.toast?.info?.(`View Details for task #${taskId}`);
+    toast({
+      title: "View Details",
+      description: `View Details for task #${taskId}`,
+    });
   };
 
   const handleAssign = (taskId: number) => {
-    window.toast?.info?.(`Assign clicked for task #${taskId}`);
+    toast({
+      title: "Assign Task", 
+      description: `Assign clicked for task #${taskId}`,
+    });
   };
 
   const handleUpdate = (taskId: number) => {
-    window.toast?.info?.(`Update clicked for task #${taskId}`);
+    toast({
+      title: "Update Task",
+      description: `Update clicked for task #${taskId}`,
+    });
   };
 
   return (

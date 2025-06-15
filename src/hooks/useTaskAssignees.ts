@@ -20,25 +20,68 @@ export function useTaskAssignees(taskId: string | undefined | null) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>();
 
+  // Helper to fetch profiles for given member_ids
+  const loadProfiles = async (memberIds: string[]) => {
+    if (memberIds.length === 0) return {};
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id,name,email")
+      .in("id", memberIds);
+
+    if (error) {
+      toast({
+        title: "Error loading profile",
+        description: error.message,
+        variant: "destructive",
+      });
+      return {};
+    }
+
+    // Create a map id -> profile
+    const profilesMap: Record<string, { name?: string; email?: string }> = {};
+    (data ?? []).forEach((row) => {
+      profilesMap[row.id] = {
+        name: row.name ?? undefined,
+        email: row.email ?? undefined,
+      };
+    });
+    return profilesMap;
+  };
+
   // Fetch assignees for this task
   const fetchAssignees = useCallback(async () => {
     if (!taskId) return;
     setLoading(true);
     setError(undefined);
+
+    // 1. Get assignees (without attempted join)
     const { data, error } = await supabase
       .from("assignees")
-      .select("*,profile:member_id(name,email)")
+      .select("*")
       .eq("task_id", taskId);
+
     if (error) {
       setError(error);
       toast({
         title: "Error",
         description: "Failed to fetch assignees: " + error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
-    } else {
-      setAssignees(data || []);
+      setLoading(false);
+      return;
     }
+
+    // 2. Pull member_ids to fetch profiles
+    const memberIds = Array.from(new Set((data ?? []).map(a => a.member_id)));
+    const profilesMap = await loadProfiles(memberIds);
+
+    // 3. Merge profile data
+    const withProfiles: Assignee[] = (data ?? []).map(a => ({
+      ...a,
+      profile: profilesMap[a.member_id] ?? undefined,
+    }));
+
+    setAssignees(withProfiles);
     setLoading(false);
   }, [taskId]);
 
@@ -62,12 +105,12 @@ export function useTaskAssignees(taskId: string | undefined | null) {
       toast({
         title: "Could not assign member",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
     } else {
       toast({
         title: "Assignee added",
-        description: "Member assigned to task"
+        description: "Member assigned to task",
       });
       await fetchAssignees();
     }
@@ -86,12 +129,12 @@ export function useTaskAssignees(taskId: string | undefined | null) {
       toast({
         title: "Could not remove assignee",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
     } else {
       toast({
         title: "Assignee removed",
-        description: "Member removed from task"
+        description: "Member removed from task",
       });
       await fetchAssignees();
     }

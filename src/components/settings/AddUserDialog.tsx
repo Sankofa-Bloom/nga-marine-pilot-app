@@ -59,11 +59,12 @@ export default function AddUserDialog({ open, onOpenChange, onAdd, loading }: Ad
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="border-4 border-fuchsia-500 bg-white"
-        style={{ zIndex: 9999, minHeight: 220 }}
+        className="!border-4 !border-red-600 !bg-yellow-100"
+        style={{ minHeight: 200 }}
       >
-        <div className="absolute top-2 left-2 bg-fuchsia-200 px-2 py-1 rounded text-xs text-fuchsia-900 z-50">
-          DEBUG: AddUserDialog visible!
+        {/* VISUAL DEBUG */}
+        <div className="absolute top-2 right-2 bg-red-200 px-2 py-1 rounded text-xs text-red-800 z-50">
+          Debug: AddUserDialog
         </div>
         <DialogHeader className="pb-2 border-b">
           <DialogTitle className="text-lg font-semibold">Add New User</DialogTitle>

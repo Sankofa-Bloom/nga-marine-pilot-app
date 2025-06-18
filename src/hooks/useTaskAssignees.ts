@@ -50,7 +50,10 @@ export function useTaskAssignees(taskId: string | undefined | null) {
 
   // Fetch assignees for this task
   const fetchAssignees = useCallback(async () => {
-    if (!taskId) return;
+    if (!taskId) {
+      setAssignees([]);
+      return;
+    }
     setLoading(true);
     setError(undefined);
 
@@ -83,7 +86,7 @@ export function useTaskAssignees(taskId: string | undefined | null) {
 
     setAssignees(withProfiles);
     setLoading(false);
-  }, [taskId]);
+  }, [taskId]); // Only depend on taskId
 
   useEffect(() => {
     fetchAssignees();

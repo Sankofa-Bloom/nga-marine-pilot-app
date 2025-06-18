@@ -33,6 +33,78 @@ export type Database = {
         }
         Relationships: []
       }
+      document_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          category: string
+          expiry_date: string | null
+          file_path: string
+          id: string
+          is_confidential: boolean
+          mime_type: string
+          name: string
+          original_name: string
+          size: number
+          status: string
+          type: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          category: string
+          expiry_date?: string | null
+          file_path: string
+          id?: string
+          is_confidential?: boolean
+          mime_type: string
+          name: string
+          original_name: string
+          size: number
+          status?: string
+          type: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          category?: string
+          expiry_date?: string | null
+          file_path?: string
+          id?: string
+          is_confidential?: boolean
+          mime_type?: string
+          name?: string
+          original_name?: string
+          size?: number
+          status?: string
+          type?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -15,7 +16,7 @@ export function useSystemUsers() {
   const [users, setUsers] = useState<SystemUser[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = async () => {
     setLoading(true);
     // Fetch users with their profile and role (assume at least one role per user)
     const { data: profileRows, error } = await supabase
@@ -62,7 +63,7 @@ export function useSystemUsers() {
 
     setUsers(loadedUsers);
     setLoading(false);
-  }, []);
+  };
 
   // Add a new user (signup + insert role)
   const addUser = async (name: string, email: string, role: "admin" | "manager" | "employee", password: string) => {
@@ -170,7 +171,7 @@ export function useSystemUsers() {
 
   useEffect(() => {
     fetchUsers();
-  }, [fetchUsers]);
+  }, []); // Empty dependency array to avoid infinite loops
 
   return {
     users,

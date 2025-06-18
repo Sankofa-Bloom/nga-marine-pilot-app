@@ -53,11 +53,30 @@ function AssignTaskDialog({
   const { user } = useAuth();
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
-  if (!task) return null;
-
-  // Ensure string ID
-  const taskId = String(task.id);
+  // Always call hooks - pass null/undefined when task is null
+  const taskId = task ? String(task.id) : null;
   const { assignees, loading, addAssignee, removeAssignee } = useTaskAssignees(taskId);
+
+  // Early return AFTER all hooks are called
+  if (!task) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>No Task Selected</DialogTitle>
+            <DialogDescription>
+              Please select a task to assign.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="dialogSecondary">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   // Map to prevent duplicates
   const assignedIds = assignees.map(a => a.member_id);

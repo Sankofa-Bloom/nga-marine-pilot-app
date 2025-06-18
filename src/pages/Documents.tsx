@@ -1,8 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 import { 
   FileText, 
   Plus, 
@@ -16,12 +18,16 @@ import {
   Calendar,
   User,
   Lock,
-  AlertTriangle
+  AlertTriangle,
+  FolderPlus
 } from 'lucide-react';
 
 const Documents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [isNewFolderDialogOpen, setIsNewFolderDialogOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
 
   const documents = [
     {
@@ -114,6 +120,72 @@ const Documents = () => {
     }
   };
 
+  const handleUploadFiles = () => {
+    // Create a file input element
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.accept = '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png';
+    
+    input.onchange = (e) => {
+      const files = Array.from((e.target as HTMLInputElement).files || []);
+      if (files.length > 0) {
+        toast.success(`${files.length} file(s) selected for upload`);
+        // Here you would typically upload the files to your backend
+        console.log('Files to upload:', files);
+      }
+    };
+    
+    input.click();
+  };
+
+  const handleCreateFolder = () => {
+    if (!newFolderName.trim()) {
+      toast.error('Please enter a folder name');
+      return;
+    }
+    
+    toast.success(`Folder "${newFolderName}" created successfully`);
+    console.log('Creating folder:', newFolderName);
+    setNewFolderName('');
+    setIsNewFolderDialogOpen(false);
+  };
+
+  const handleViewDocument = (doc: any) => {
+    toast.info(`Opening ${doc.name}...`);
+    // Here you would typically open the document in a viewer or new tab
+    console.log('Viewing document:', doc);
+  };
+
+  const handleDownloadDocument = (doc: any) => {
+    toast.success(`Downloading ${doc.name}...`);
+    // Here you would typically trigger a download
+    console.log('Downloading document:', doc);
+    
+    // Simulate download
+    const link = document.createElement('a');
+    link.href = '#'; // In real app, this would be the file URL
+    link.download = doc.name;
+    // link.click(); // Uncomment in real implementation
+  };
+
+  const handleShareDocument = (doc: any) => {
+    // Copy share link to clipboard
+    const shareUrl = `${window.location.origin}/documents/share/${doc.id}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      toast.success(`Share link for "${doc.name}" copied to clipboard`);
+    }).catch(() => {
+      toast.error('Failed to copy share link');
+    });
+    console.log('Sharing document:', doc);
+  };
+
+  const handleFolderClick = (folder: any) => {
+    toast.info(`Opening ${folder.name} folder...`);
+    console.log('Opening folder:', folder);
+    // Here you would typically navigate to the folder contents
+  };
+
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.uploadedBy.toLowerCase().includes(searchTerm.toLowerCase());
@@ -130,14 +202,43 @@ const Documents = () => {
           <p className="text-maritime-anchor">Organize and manage your digital documents</p>
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleUploadFiles}>
             <Upload className="h-4 w-4 mr-2" />
             Upload Files
           </Button>
-          <Button className="bg-maritime-blue hover:bg-maritime-ocean">
-            <Plus className="h-4 w-4 mr-2" />
-            New Folder
-          </Button>
+          <Dialog open={isNewFolderDialogOpen} onOpenChange={setIsNewFolderDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-maritime-blue hover:bg-maritime-ocean">
+                <Plus className="h-4 w-4 mr-2" />
+                New Folder
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Folder</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <div>
+                  <label className="text-sm font-medium">Folder Name</label>
+                  <Input
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    placeholder="Enter folder name"
+                    className="mt-1"
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setIsNewFolderDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreateFolder}>
+                    <FolderPlus className="h-4 w-4 mr-2" />
+                    Create Folder
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -197,7 +298,11 @@ const Documents = () => {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {folders.map((folder, index) => (
-              <div key={index} className="p-4 border border-maritime-foam rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+              <div 
+                key={index} 
+                className="p-4 border border-maritime-foam rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => handleFolderClick(folder)}
+              >
                 <div className="flex flex-col items-center space-y-2">
                   <folder.icon className="h-8 w-8 text-maritime-ocean" />
                   <span className="text-sm font-medium text-maritime-navy text-center">{folder.name}</span>
@@ -225,25 +330,28 @@ const Documents = () => {
           <Button
             variant={filterCategory === 'all' ? 'default' : 'outline'}
             onClick={() => setFilterCategory('all')}
-            className="bg-maritime-blue hover:bg-maritime-ocean"
+            className={filterCategory === 'all' ? 'bg-maritime-blue hover:bg-maritime-ocean' : ''}
           >
             All Categories
           </Button>
           <Button
             variant={filterCategory === 'legal' ? 'default' : 'outline'}
             onClick={() => setFilterCategory('legal')}
+            className={filterCategory === 'legal' ? 'bg-maritime-blue hover:bg-maritime-ocean' : ''}
           >
             Legal
           </Button>
           <Button
             variant={filterCategory === 'safety' ? 'default' : 'outline'}
             onClick={() => setFilterCategory('safety')}
+            className={filterCategory === 'safety' ? 'bg-maritime-blue hover:bg-maritime-ocean' : ''}
           >
             Safety
           </Button>
           <Button
             variant={filterCategory === 'training' ? 'default' : 'outline'}
             onClick={() => setFilterCategory('training')}
+            className={filterCategory === 'training' ? 'bg-maritime-blue hover:bg-maritime-ocean' : ''}
           >
             Training
           </Button>
@@ -286,15 +394,15 @@ const Documents = () => {
                   </div>
                 </div>
                 <div className="flex space-x-2">
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => handleViewDocument(doc)}>
                     <Eye className="h-4 w-4 mr-1" />
                     View
                   </Button>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => handleDownloadDocument(doc)}>
                     <Download className="h-4 w-4 mr-1" />
                     Download
                   </Button>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="outline" onClick={() => handleShareDocument(doc)}>
                     <Share className="h-4 w-4 mr-1" />
                     Share
                   </Button>

@@ -56,8 +56,9 @@ export const useTimeTracking = () => {
     if (data && !error) {
       setCurrentEntry({
         ...data,
-        clock_in_location: data.clock_in_location as LocationData,
-        clock_out_location: data.clock_out_location as LocationData | undefined
+        clock_in_location: data.clock_in_location as unknown as LocationData,
+        clock_out_location: data.clock_out_location as unknown as LocationData | undefined,
+        status: data.status as 'clocked-in' | 'clocked-out'
       });
     }
   };
@@ -152,7 +153,7 @@ export const useTimeTracking = () => {
         .from('time_entries')
         .insert({
           user_id: user.id,
-          clock_in_location: locationData,
+          clock_in_location: locationData as any,
           status: 'clocked-in'
         })
         .select()
@@ -162,8 +163,9 @@ export const useTimeTracking = () => {
 
       setCurrentEntry({
         ...data,
-        clock_in_location: data.clock_in_location as LocationData,
-        clock_out_location: data.clock_out_location as LocationData | undefined
+        clock_in_location: data.clock_in_location as unknown as LocationData,
+        clock_out_location: data.clock_out_location as unknown as LocationData | undefined,
+        status: data.status as 'clocked-in' | 'clocked-out'
       });
       toast.success('Clocked in successfully!');
       return true;
@@ -190,7 +192,7 @@ export const useTimeTracking = () => {
         .from('time_entries')
         .update({
           clock_out: new Date().toISOString(),
-          clock_out_location: locationData,
+          clock_out_location: locationData as any,
           status: 'clocked-out'
         })
         .eq('id', currentEntry.id);
@@ -222,7 +224,7 @@ export const useTimeTracking = () => {
         .from('location_access_requests')
         .insert({
           user_id: user.id,
-          requested_location: locationData,
+          requested_location: locationData as any,
           reason
         });
 

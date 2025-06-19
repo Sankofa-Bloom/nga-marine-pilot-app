@@ -3,10 +3,9 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Clock, MapPin, Play, Square, AlertTriangle } from 'lucide-react';
+import { Clock, MapPin, Play, Square, AlertTriangle, MessageSquare } from 'lucide-react';
 import { useTimeTracking } from '@/hooks/useTimeTracking';
 
 export const ClockInOut = () => {
@@ -92,14 +91,59 @@ export const ClockInOut = () => {
                 <p>Not clocked in</p>
               </div>
 
-              <Button 
-                onClick={handleClockIn} 
-                disabled={loading}
-                className="w-full bg-green-600 hover:bg-green-700"
-              >
-                <Play className="h-4 w-4 mr-2" />
-                {loading ? 'Clocking In...' : 'Clock In'}
-              </Button>
+              <div className="space-y-2">
+                <Button 
+                  onClick={handleClockIn} 
+                  disabled={loading}
+                  className="w-full bg-green-600 hover:bg-green-700"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  {loading ? 'Clocking In...' : 'Clock In'}
+                </Button>
+
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="w-full">
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Request Admin Approval
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center space-x-2">
+                        <AlertTriangle className="h-5 w-5 text-amber-500" />
+                        <span>Request Location Access</span>
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <p className="text-sm text-gray-600">
+                        If you're unable to clock in from your current location, please provide a reason and request admin approval.
+                      </p>
+                      <Textarea
+                        placeholder="Please explain why you need to clock in from this location..."
+                        value={requestReason}
+                        onChange={(e) => setRequestReason(e.target.value)}
+                      />
+                      <div className="flex space-x-2">
+                        <Button 
+                          onClick={handleLocationRequest}
+                          disabled={!requestReason.trim()}
+                          className="flex-1"
+                        >
+                          Submit Request
+                        </Button>
+                        <Button 
+                          onClick={() => setRequestReason('')}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           )}
         </CardContent>

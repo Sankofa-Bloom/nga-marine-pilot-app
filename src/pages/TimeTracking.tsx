@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -113,8 +112,8 @@ const TimeTracking = () => {
       const profile = profiles?.find(p => p.id === entry.user_id);
       return {
         ...entry,
-        clock_in_location: entry.clock_in_location as LocationData,
-        clock_out_location: entry.clock_out_location as LocationData | undefined,
+        clock_in_location: entry.clock_in_location as unknown as LocationData,
+        clock_out_location: entry.clock_out_location as unknown as LocationData | undefined,
         user_name: profile?.name || 'Unknown User',
         user_email: profile?.email || 'No email'
       };
@@ -162,7 +161,7 @@ const TimeTracking = () => {
       const profile = profiles?.find(p => p.id === request.user_id);
       return {
         ...request,
-        requested_location: request.requested_location as LocationData,
+        requested_location: request.requested_location as unknown as LocationData,
         user_name: profile?.name || 'Unknown User',
         user_email: profile?.email || 'No email'
       };

@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { toast } from 'sonner';
 import { 
   Ship, 
   Plus, 
@@ -92,6 +92,21 @@ const Vessels = () => {
     }
   };
 
+  const handleManageVessel = (vessel: any) => {
+    toast.success(`Opening management panel for ${vessel.name}`);
+    // In production, navigate to vessel management page
+  };
+
+  const handleScheduleVessel = (vessel: any) => {
+    toast.success(`Opening schedule for ${vessel.name}`);
+    // In production, navigate to scheduling page
+  };
+
+  const handleAddVessel = () => {
+    toast.success('Opening add vessel form');
+    // In production, open add vessel dialog
+  };
+
   const filteredVessels = vessels.filter(vessel => {
     const matchesSearch = vessel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          vessel.type.toLowerCase().includes(searchTerm.toLowerCase());
@@ -107,7 +122,10 @@ const Vessels = () => {
           <h1 className="text-3xl font-bold text-maritime-navy">Fleet Management</h1>
           <p className="text-maritime-anchor">Monitor and manage your vessel fleet</p>
         </div>
-        <Button className="bg-maritime-blue hover:bg-maritime-ocean">
+        <Button 
+          className="bg-maritime-blue hover:bg-maritime-ocean"
+          onClick={handleAddVessel}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add Vessel
         </Button>
@@ -248,11 +266,21 @@ const Vessels = () => {
               </div>
 
               <div className="flex space-x-2 pt-2">
-                <Button size="sm" variant="outline" className="flex-1">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => handleManageVessel(vessel)}
+                >
                   <Settings className="h-4 w-4 mr-1" />
                   Manage
                 </Button>
-                <Button size="sm" variant="outline" className="flex-1">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => handleScheduleVessel(vessel)}
+                >
                   <Calendar className="h-4 w-4 mr-1" />
                   Schedule
                 </Button>

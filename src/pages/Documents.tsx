@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,7 +17,8 @@ import {
   User,
   Lock,
   AlertTriangle,
-  MoreVertical
+  MoreVertical,
+  Link
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -28,11 +28,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useDocuments } from '@/hooks/useDocuments';
 import { FileUploadDialog } from '@/components/documents/FileUploadDialog';
+import { PublicUploadDialog } from '@/components/documents/PublicUploadDialog';
 
 const Documents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [isPublicUploadDialogOpen, setIsPublicUploadDialogOpen] = useState(false);
 
   const { 
     documents, 
@@ -146,13 +148,23 @@ const Documents = () => {
           <h1 className="text-3xl font-bold text-maritime-navy">Document Management</h1>
           <p className="text-maritime-anchor">Organize and manage your digital documents</p>
         </div>
-        <Button 
-          onClick={() => setIsUploadDialogOpen(true)}
-          className="bg-maritime-blue hover:bg-maritime-ocean w-full sm:w-auto"
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          Upload Files
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button 
+            onClick={() => setIsUploadDialogOpen(true)}
+            className="bg-maritime-blue hover:bg-maritime-ocean w-full sm:w-auto"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Upload Files
+          </Button>
+          <Button 
+            onClick={() => setIsPublicUploadDialogOpen(true)}
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
+            <Link className="h-4 w-4 mr-2" />
+            Generate Upload Link
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -354,12 +366,18 @@ const Documents = () => {
         </CardContent>
       </Card>
 
-      {/* Upload Dialog */}
+      {/* Upload Dialogs */}
       <FileUploadDialog
         open={isUploadDialogOpen}
         onOpenChange={setIsUploadDialogOpen}
         categories={categories}
         onUpload={uploadDocument}
+      />
+
+      <PublicUploadDialog
+        open={isPublicUploadDialogOpen}
+        onOpenChange={setIsPublicUploadDialogOpen}
+        categories={categories}
       />
     </div>
   );

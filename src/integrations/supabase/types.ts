@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      allowed_locations: {
+        Row: {
+          address: string
+          created_at: string
+          id: string
+          is_active: boolean
+          latitude: number
+          longitude: number
+          name: string
+          radius_meters: number
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          latitude: number
+          longitude: number
+          name: string
+          radius_meters?: number
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          latitude?: number
+          longitude?: number
+          name?: string
+          radius_meters?: number
+        }
+        Relationships: []
+      }
       assignees: {
         Row: {
           assigned_at: string | null
@@ -105,6 +138,39 @@ export type Database = {
         }
         Relationships: []
       }
+      location_access_requests: {
+        Row: {
+          id: string
+          reason: string | null
+          requested_at: string
+          requested_location: Json
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          reason?: string | null
+          requested_at?: string
+          requested_location: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          reason?: string | null
+          requested_at?: string
+          requested_location?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -128,6 +194,74 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      time_entries: {
+        Row: {
+          clock_in: string
+          clock_in_location: Json
+          clock_out: string | null
+          clock_out_location: Json | null
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clock_in?: string
+          clock_in_location: Json
+          clock_out?: string | null
+          clock_out_location?: Json | null
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clock_in?: string
+          clock_in_location?: Json
+          clock_out?: string | null
+          clock_out_location?: Json | null
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_location_permissions: {
+        Row: {
+          can_clock_in_anywhere: boolean
+          created_at: string
+          id: string
+          location_id: string | null
+          user_id: string
+        }
+        Insert: {
+          can_clock_in_anywhere?: boolean
+          created_at?: string
+          id?: string
+          location_id?: string | null
+          user_id: string
+        }
+        Update: {
+          can_clock_in_anywhere?: boolean
+          created_at?: string
+          id?: string
+          location_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_location_permissions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "allowed_locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -155,7 +289,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: { _user_id: string; _role: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "manager" | "employee"

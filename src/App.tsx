@@ -19,6 +19,8 @@ import Finance from "./pages/Finance";
 import Reports from "./pages/Reports";
 import Documents from "./pages/Documents";
 import Settings from "./pages/Settings";
+import TimeTracking from "./pages/TimeTracking";
+import ClockInOutPage from "./pages/ClockInOutPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -98,6 +100,16 @@ const AppContent = () => {
         <Route path="/documents" element={
           <ProtectedRoute>
             <Documents />
+          </ProtectedRoute>
+        } />
+        <Route path="/time-tracking" element={
+          <ProtectedRoute>
+            <TimeTracking />
+          </ProtectedRoute>
+        } />
+        <Route path="/clock-in-out" element={
+          <ProtectedRoute>
+            <ClockInOutPage />
           </ProtectedRoute>
         } />
         <Route path="/admin/settings" element={

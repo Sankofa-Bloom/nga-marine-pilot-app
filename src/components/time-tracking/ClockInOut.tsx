@@ -1,128 +1,32 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, Play, Square } from 'lucide-react';
-import { toast } from 'sonner';
-
-interface TimeEntry {
-  id: string;
-  clockIn: string;
-  clockOut?: string;
-  location: {
-    latitude: number;
-    longitude: number;
-    address?: string;
-  };
-  status: 'clocked-in' | 'clocked-out';
-}
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Clock, MapPin, Play, Square, AlertTriangle } from 'lucide-react';
+import { useTimeTracking } from '@/hooks/useTimeTracking';
 
 export const ClockInOut = () => {
-  const [currentEntry, setCurrentEntry] = useState<TimeEntry | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [location, setLocation] = useState<GeolocationPosition | null>(null);
+  const { currentEntry, loading, clockIn, clockOut, requestLocationAccess } = useTimeTracking();
+  const [showRequestDialog, setShowRequestDialog] = useState(false);
+  const [requestReason, setRequestReason] = useState('');
 
-  useEffect(() => {
-    // Check for existing clock-in entry
-    const storedEntry = localStorage.getItem('current_time_entry');
-    if (storedEntry) {
-      setCurrentEntry(JSON.parse(storedEntry));
-    }
-
-    // Get current location
-    getCurrentLocation();
-  }, []);
-
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation(position);
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          toast.error('Unable to get your location');
-        }
-      );
-    } else {
-      toast.error('Geolocation is not supported by this browser');
+  const handleClockIn = async () => {
+    const success = await clockIn();
+    if (!success) {
+      setShowRequestDialog(true);
     }
   };
 
-  const clockIn = async () => {
-    if (!location) {
-      toast.error('Location is required for clock-in');
-      return;
+  const handleLocationRequest = async () => {
+    const success = await requestLocationAccess(requestReason);
+    if (success) {
+      setShowRequestDialog(false);
+      setRequestReason('');
     }
-
-    setLoading(true);
-    try {
-      // Get address from coordinates (using a reverse geocoding service)
-      const address = await getAddressFromCoordinates(
-        location.coords.latitude,
-        location.coords.longitude
-      );
-
-      const entry: TimeEntry = {
-        id: crypto.randomUUID(),
-        clockIn: new Date().toISOString(),
-        location: {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          address
-        },
-        status: 'clocked-in'
-      };
-
-      setCurrentEntry(entry);
-      localStorage.setItem('current_time_entry', JSON.stringify(entry));
-      
-      // In production, save to Supabase database
-      toast.success('Clocked in successfully!');
-    } catch (error) {
-      console.error('Clock-in error:', error);
-      toast.error('Failed to clock in');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const clockOut = async () => {
-    if (!currentEntry || !location) {
-      toast.error('No active clock-in found or location unavailable');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const updatedEntry = {
-        ...currentEntry,
-        clockOut: new Date().toISOString(),
-        status: 'clocked-out' as const
-      };
-
-      setCurrentEntry(null);
-      localStorage.removeItem('current_time_entry');
-      
-      // Save completed entry to history
-      const timeHistory = JSON.parse(localStorage.getItem('time_history') || '[]');
-      timeHistory.push(updatedEntry);
-      localStorage.setItem('time_history', JSON.stringify(timeHistory));
-      
-      // In production, save to Supabase database
-      toast.success('Clocked out successfully!');
-    } catch (error) {
-      console.error('Clock-out error:', error);
-      toast.error('Failed to clock out');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getAddressFromCoordinates = async (lat: number, lng: number): Promise<string> => {
-    // This is a placeholder - in production, use a geocoding service
-    return `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   };
 
   const formatTime = (timeString: string) => {
@@ -132,7 +36,7 @@ export const ClockInOut = () => {
   const calculateWorkTime = () => {
     if (!currentEntry) return '0:00';
     
-    const start = new Date(currentEntry.clockIn);
+    const start = new Date(currentEntry.clock_in);
     const now = new Date();
     const diff = now.getTime() - start.getTime();
     
@@ -143,68 +47,100 @@ export const ClockInOut = () => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Clock className="h-5 w-5" />
-          <span>Time Tracking</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {currentEntry ? (
+    <>
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Clock className="h-5 w-5" />
+            <span>Time Tracking</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {currentEntry ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Badge className="bg-green-100 text-green-800">
+                  Clocked In
+                </Badge>
+                <span className="font-mono text-lg">{calculateWorkTime()}</span>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2 text-sm">
+                  <Clock className="h-4 w-4 text-gray-500" />
+                  <span>Started: {formatTime(currentEntry.clock_in)}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <MapPin className="h-4 w-4 text-gray-500" />
+                  <span className="truncate">{currentEntry.clock_in_location.address}</span>
+                </div>
+              </div>
+
+              <Button 
+                onClick={clockOut} 
+                disabled={loading}
+                className="w-full bg-red-600 hover:bg-red-700"
+              >
+                <Square className="h-4 w-4 mr-2" />
+                {loading ? 'Clocking Out...' : 'Clock Out'}
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="text-center text-gray-500">
+                <Clock className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                <p>Not clocked in</p>
+              </div>
+
+              <Button 
+                onClick={handleClockIn} 
+                disabled={loading}
+                className="w-full bg-green-600 hover:bg-green-700"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                {loading ? 'Clocking In...' : 'Clock In'}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              <span>Location Access Required</span>
+            </DialogTitle>
+          </DialogHeader>
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Badge className="bg-green-100 text-green-800">
-                Clocked In
-              </Badge>
-              <span className="font-mono text-lg">{calculateWorkTime()}</span>
+            <p className="text-sm text-gray-600">
+              You are not authorized to clock in from this location. Please request access from your administrator.
+            </p>
+            <Textarea
+              placeholder="Reason for requesting access from this location..."
+              value={requestReason}
+              onChange={(e) => setRequestReason(e.target.value)}
+            />
+            <div className="flex space-x-2">
+              <Button 
+                onClick={handleLocationRequest}
+                disabled={!requestReason.trim()}
+                className="flex-1"
+              >
+                Request Access
+              </Button>
+              <Button 
+                onClick={() => setShowRequestDialog(false)}
+                variant="outline"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
             </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-sm">
-                <Clock className="h-4 w-4 text-gray-500" />
-                <span>Started: {formatTime(currentEntry.clockIn)}</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <MapPin className="h-4 w-4 text-gray-500" />
-                <span className="truncate">{currentEntry.location.address}</span>
-              </div>
-            </div>
-
-            <Button 
-              onClick={clockOut} 
-              disabled={loading}
-              className="w-full bg-red-600 hover:bg-red-700"
-            >
-              <Square className="h-4 w-4 mr-2" />
-              {loading ? 'Clocking Out...' : 'Clock Out'}
-            </Button>
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="text-center text-gray-500">
-              <Clock className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-              <p>Not clocked in</p>
-            </div>
-
-            {location && (
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <MapPin className="h-4 w-4" />
-                <span>Location ready</span>
-              </div>
-            )}
-
-            <Button 
-              onClick={clockIn} 
-              disabled={loading || !location}
-              className="w-full bg-green-600 hover:bg-green-700"
-            >
-              <Play className="h-4 w-4 mr-2" />
-              {loading ? 'Clocking In...' : 'Clock In'}
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

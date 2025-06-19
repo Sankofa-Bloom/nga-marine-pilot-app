@@ -25,7 +25,8 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  Home
+  Home,
+  Clock
 } from 'lucide-react';
 
 const AppSidebar = () => {
@@ -33,48 +34,107 @@ const AppSidebar = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  const menuItems = [
-    {
-      title: "Dashboard",
-      url: "/",
-      icon: Home,
-    },
-    {
-      title: "Employees",
-      url: "/employees",
-      icon: User,
-    },
-    {
-      title: "Scheduling",
-      url: "/scheduling",
-      icon: Calendar,
-    },
-    {
-      title: "Vessels",
-      url: "/vessels",
-      icon: Ship,
-    },
-    {
-      title: "Tasks",
-      url: "/tasks",
-      icon: CheckSquare,
-    },
-    {
-      title: "Finance",
-      url: "/finance",
-      icon: DollarSign,
-    },
-    {
-      title: "Reports",
-      url: "/reports",
-      icon: BarChart3,
-    },
-    {
-      title: "Documents",
-      url: "/documents",
-      icon: FileText,
-    },
-  ];
+  const getMenuItems = () => {
+    const baseItems = [
+      {
+        title: "Dashboard",
+        url: "/",
+        icon: Home,
+      },
+    ];
+
+    if (user?.role === 'admin') {
+      return [
+        ...baseItems,
+        {
+          title: "Employees",
+          url: "/employees",
+          icon: User,
+        },
+        {
+          title: "Scheduling",
+          url: "/scheduling",
+          icon: Calendar,
+        },
+        {
+          title: "Vessels",
+          url: "/vessels",
+          icon: Ship,
+        },
+        {
+          title: "Tasks",
+          url: "/tasks",
+          icon: CheckSquare,
+        },
+        {
+          title: "Time Tracking",
+          url: "/time-tracking",
+          icon: Clock,
+        },
+        {
+          title: "Finance",
+          url: "/finance",
+          icon: DollarSign,
+        },
+        {
+          title: "Reports",
+          url: "/reports",
+          icon: BarChart3,
+        },
+        {
+          title: "Documents",
+          url: "/documents",
+          icon: FileText,
+        },
+      ];
+    } else if (user?.role === 'manager') {
+      return [
+        ...baseItems,
+        {
+          title: "Employees",
+          url: "/employees",
+          icon: User,
+        },
+        {
+          title: "Tasks",
+          url: "/tasks",
+          icon: CheckSquare,
+        },
+        {
+          title: "Time Tracking",
+          url: "/time-tracking",
+          icon: Clock,
+        },
+        {
+          title: "Documents",
+          url: "/documents",
+          icon: FileText,
+        },
+      ];
+    } else {
+      // Employee role
+      return [
+        ...baseItems,
+        {
+          title: "Tasks",
+          url: "/tasks",
+          icon: CheckSquare,
+        },
+        {
+          title: "Clock In/Out",
+          url: "/clock-in-out",
+          icon: Clock,
+        },
+        {
+          title: "Documents",
+          url: "/documents",
+          icon: FileText,
+        },
+      ];
+    }
+  };
+
+  const menuItems = getMenuItems();
 
   const handleLogout = () => {
     logout();

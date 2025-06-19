@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { 
   Home,
   Users, 
-  Calendar, 
+  Clock,
   Ship, 
   CheckSquare,
   DollarSign,
@@ -16,6 +16,7 @@ import {
   LogOut,
   User
 } from 'lucide-react';
+import { ClockInOut } from '@/components/time-tracking/ClockInOut';
 
 interface MobileLayoutProps {
   children: React.ReactNode;
@@ -37,6 +38,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
         ...baseItems,
         { title: "Employees", url: "/employees", icon: Users },
         { title: "Tasks", url: "/tasks", icon: CheckSquare },
+        { title: "Time Track", url: "/time-tracking", icon: Clock },
         { title: "Reports", url: "/reports", icon: BarChart3 },
         { title: "Settings", url: "/admin/settings", icon: Settings },
       ];
@@ -45,7 +47,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
         ...baseItems,
         { title: "Employees", url: "/employees", icon: Users },
         { title: "Tasks", url: "/tasks", icon: CheckSquare },
-        { title: "Scheduling", url: "/scheduling", icon: Calendar },
+        { title: "Time Track", url: "/time-tracking", icon: Clock },
         { title: "Documents", url: "/documents", icon: FileText },
       ];
     } else {
@@ -53,7 +55,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
       return [
         ...baseItems,
         { title: "Tasks", url: "/tasks", icon: CheckSquare },
-        { title: "Schedule", url: "/scheduling", icon: Calendar },
+        { title: "Clock In/Out", url: "/clock-in-out", icon: Clock },
         { title: "Documents", url: "/documents", icon: FileText },
         { title: "Profile", url: "/profile", icon: User },
       ];
@@ -68,6 +70,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   };
 
   const isActive = (url: string) => location.pathname === url;
+
+  // Show clock in/out widget on dashboard for employees
+  const showClockWidget = location.pathname === '/' && user?.role === 'employee';
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -99,6 +104,11 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
       {/* Main Content */}
       <main className="flex-1 overflow-auto pb-20">
         <div className="p-4">
+          {showClockWidget && (
+            <div className="mb-6">
+              <ClockInOut />
+            </div>
+          )}
           {children}
         </div>
       </main>

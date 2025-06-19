@@ -8,21 +8,30 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clock, MapPin, Users, Settings, Plus, Check, X } from 'lucide-react';
+import { Clock, MapPin, Users, Plus, Check, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+
+interface LocationData {
+  latitude: number;
+  longitude: number;
+  address: string;
+}
 
 interface TimeEntry {
   id: string;
   user_id: string;
   clock_in: string;
   clock_out?: string;
-  clock_in_location: any;
-  clock_out_location?: any;
+  clock_in_location: LocationData;
+  clock_out_location?: LocationData;
   status: string;
-  profiles: { name: string; email: string };
+}
+
+interface TimeEntryWithProfile extends TimeEntry {
+  user_name: string;
+  user_email: string;
 }
 
 interface AllowedLocation {
@@ -38,11 +47,12 @@ interface AllowedLocation {
 interface LocationRequest {
   id: string;
   user_id: string;
-  requested_location: any;
+  requested_location: LocationData;
   reason: string;
   status: string;
   requested_at: string;
-  profiles: { name: string; email: string };
+  user_name: string;
+  user_email: string;
 }
 
 interface UserProfile {
@@ -53,12 +63,11 @@ interface UserProfile {
 
 const TimeTracking = () => {
   const { user } = useAuth();
-  const [activeEntries, setActiveEntries] = useState<TimeEntry[]>([]);
+  const [activeEntries, setActiveEntries] = useState<TimeEntryWithProfile[]>([]);
   const [locations, setLocations] = useState<AllowedLocation[]>([]);
   const [requests, setRequests] = useState<LocationRequest[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [showLocationDialog, setShowLocationDialog] = useState(false);
-  const [showPermissionDialog, setShowPermissionDialog] = useState(false);
   const [newLocation, setNewLocation] = useState({
     name: '',
     address: '',
@@ -77,18 +86,41 @@ const TimeTracking = () => {
   }, [user]);
 
   const fetchActiveEntries = async () => {
-    const { data, error } = await supabase
+    // Get active time entries
+    const { data: timeEntries, error: timeError } = await supabase
       .from('time_entries')
-      .select(`
-        *,
-        profiles:user_id (name, email)
-      `)
+      .select('*')
       .eq('status', 'clocked-in')
       .order('clock_in', { ascending: false });
 
-    if (data && !error) {
-      setActiveEntries(data);
+    if (timeError) {
+      console.error('Error fetching time entries:', timeError);
+      return;
     }
+
+    // Get user profiles separately
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, name, email');
+
+    if (profileError) {
+      console.error('Error fetching profiles:', profileError);
+      return;
+    }
+
+    // Combine the data
+    const entriesWithProfiles: TimeEntryWithProfile[] = timeEntries?.map(entry => {
+      const profile = profiles?.find(p => p.id === entry.user_id);
+      return {
+        ...entry,
+        clock_in_location: entry.clock_in_location as LocationData,
+        clock_out_location: entry.clock_out_location as LocationData | undefined,
+        user_name: profile?.name || 'Unknown User',
+        user_email: profile?.email || 'No email'
+      };
+    }) || [];
+
+    setActiveEntries(entriesWithProfiles);
   };
 
   const fetchLocations = async () => {
@@ -103,18 +135,40 @@ const TimeTracking = () => {
   };
 
   const fetchRequests = async () => {
-    const { data, error } = await supabase
+    // Get access requests
+    const { data: accessRequests, error: requestError } = await supabase
       .from('location_access_requests')
-      .select(`
-        *,
-        profiles:user_id (name, email)
-      `)
+      .select('*')
       .eq('status', 'pending')
       .order('requested_at', { ascending: false });
 
-    if (data && !error) {
-      setRequests(data);
+    if (requestError) {
+      console.error('Error fetching requests:', requestError);
+      return;
     }
+
+    // Get user profiles separately
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, name, email');
+
+    if (profileError) {
+      console.error('Error fetching profiles:', profileError);
+      return;
+    }
+
+    // Combine the data
+    const requestsWithProfiles: LocationRequest[] = accessRequests?.map(request => {
+      const profile = profiles?.find(p => p.id === request.user_id);
+      return {
+        ...request,
+        requested_location: request.requested_location as LocationData,
+        user_name: profile?.name || 'Unknown User',
+        user_email: profile?.email || 'No email'
+      };
+    }) || [];
+
+    setRequests(requestsWithProfiles);
   };
 
   const fetchUsers = async () => {
@@ -124,7 +178,11 @@ const TimeTracking = () => {
       .order('name');
 
     if (data && !error) {
-      setUsers(data);
+      setUsers(data.map(profile => ({
+        id: profile.id,
+        name: profile.name || 'Unknown User',
+        email: profile.email || 'No email'
+      })));
     }
   };
 
@@ -250,8 +308,8 @@ const TimeTracking = () => {
                   {activeEntries.map((entry) => (
                     <div key={entry.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="space-y-1">
-                        <h3 className="font-medium">{entry.profiles.name}</h3>
-                        <p className="text-sm text-gray-500">{entry.profiles.email}</p>
+                        <h3 className="font-medium">{entry.user_name}</h3>
+                        <p className="text-sm text-gray-500">{entry.user_email}</p>
                         <div className="flex items-center space-x-4 text-sm">
                           <span>Started: {new Date(entry.clock_in).toLocaleTimeString()}</span>
                           <span>Duration: {formatDuration(entry.clock_in)}</span>
@@ -382,7 +440,7 @@ const TimeTracking = () => {
                     <div key={request.id} className="p-4 border rounded-lg">
                       <div className="flex items-start justify-between">
                         <div className="space-y-2">
-                          <h3 className="font-medium">{request.profiles.name}</h3>
+                          <h3 className="font-medium">{request.user_name}</h3>
                           <p className="text-sm text-gray-600">{request.reason}</p>
                           <p className="text-xs text-gray-500">
                             Location: {request.requested_location.address}

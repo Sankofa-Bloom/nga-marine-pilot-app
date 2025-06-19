@@ -4,21 +4,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+interface LocationData {
+  latitude: number;
+  longitude: number;
+  address: string;
+}
+
 interface TimeEntry {
   id: string;
   user_id: string;
   clock_in: string;
   clock_out?: string;
-  clock_in_location: {
-    latitude: number;
-    longitude: number;
-    address: string;
-  };
-  clock_out_location?: {
-    latitude: number;
-    longitude: number;
-    address: string;
-  };
+  clock_in_location: LocationData;
+  clock_out_location?: LocationData;
   status: 'clocked-in' | 'clocked-out';
 }
 
@@ -53,10 +51,14 @@ export const useTimeTracking = () => {
       .select('*')
       .eq('user_id', user.id)
       .eq('status', 'clocked-in')
-      .single();
+      .maybeSingle();
 
     if (data && !error) {
-      setCurrentEntry(data);
+      setCurrentEntry({
+        ...data,
+        clock_in_location: data.clock_in_location as LocationData,
+        clock_out_location: data.clock_out_location as LocationData | undefined
+      });
     }
   };
 
@@ -144,12 +146,13 @@ export const useTimeTracking = () => {
       }
 
       const address = await getAddressFromCoordinates(latitude, longitude);
+      const locationData: LocationData = { latitude, longitude, address };
 
       const { data, error } = await supabase
         .from('time_entries')
         .insert({
           user_id: user.id,
-          clock_in_location: { latitude, longitude, address },
+          clock_in_location: locationData,
           status: 'clocked-in'
         })
         .select()
@@ -157,7 +160,11 @@ export const useTimeTracking = () => {
 
       if (error) throw error;
 
-      setCurrentEntry(data);
+      setCurrentEntry({
+        ...data,
+        clock_in_location: data.clock_in_location as LocationData,
+        clock_out_location: data.clock_out_location as LocationData | undefined
+      });
       toast.success('Clocked in successfully!');
       return true;
     } catch (error) {
@@ -177,12 +184,13 @@ export const useTimeTracking = () => {
       const position = await getCurrentLocation();
       const { latitude, longitude } = position.coords;
       const address = await getAddressFromCoordinates(latitude, longitude);
+      const locationData: LocationData = { latitude, longitude, address };
 
       const { error } = await supabase
         .from('time_entries')
         .update({
           clock_out: new Date().toISOString(),
-          clock_out_location: { latitude, longitude, address },
+          clock_out_location: locationData,
           status: 'clocked-out'
         })
         .eq('id', currentEntry.id);
@@ -208,12 +216,13 @@ export const useTimeTracking = () => {
       const position = await getCurrentLocation();
       const { latitude, longitude } = position.coords;
       const address = await getAddressFromCoordinates(latitude, longitude);
+      const locationData: LocationData = { latitude, longitude, address };
 
       const { error } = await supabase
         .from('location_access_requests')
         .insert({
           user_id: user.id,
-          requested_location: { latitude, longitude, address },
+          requested_location: locationData,
           reason
         });
 

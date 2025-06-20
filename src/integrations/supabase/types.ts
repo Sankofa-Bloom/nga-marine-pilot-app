@@ -66,6 +66,33 @@ export type Database = {
         }
         Relationships: []
       }
+      departments: {
+        Row: {
+          budget_allocated: number | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          budget_allocated?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          budget_allocated?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       document_categories: {
         Row: {
           created_at: string
@@ -138,6 +165,154 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          created_by: string
+          date: string
+          department_id: string | null
+          description: string
+          id: string
+          status: string
+          transaction_number: string
+          type: string
+          updated_at: string
+          vessel: string | null
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          created_by: string
+          date?: string
+          department_id?: string | null
+          description: string
+          id?: string
+          status?: string
+          transaction_number: string
+          type: string
+          updated_at?: string
+          vessel?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          created_by?: string
+          date?: string
+          department_id?: string | null
+          description?: string
+          id?: string
+          status?: string
+          transaction_number?: string
+          type?: string
+          updated_at?: string
+          vessel?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_transactions_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_line_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          invoice_id: string
+          quantity: number
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          invoice_id: string
+          quantity?: number
+          total: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          invoice_id?: string
+          quantity?: number
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_line_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          client_address: string | null
+          client_email: string | null
+          client_name: string
+          created_at: string
+          created_by: string
+          due_date: string
+          id: string
+          invoice_number: string
+          notes: string | null
+          status: string
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name: string
+          created_at?: string
+          created_by: string
+          due_date: string
+          id?: string
+          invoice_number: string
+          notes?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name?: string
+          created_at?: string
+          created_by?: string
+          due_date?: string
+          id?: string
+          invoice_number?: string
+          notes?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       location_access_requests: {
         Row: {
           id: string
@@ -194,6 +369,78 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      receipts: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          created_by: string
+          department_id: string
+          description: string
+          file_path: string | null
+          id: string
+          issue_description: string | null
+          payment_method: string
+          receipt_date: string
+          receipt_number: string
+          status: string
+          transaction_id: string | null
+          updated_at: string
+          vendor_name: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          created_by: string
+          department_id: string
+          description: string
+          file_path?: string | null
+          id?: string
+          issue_description?: string | null
+          payment_method: string
+          receipt_date?: string
+          receipt_number: string
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+          vendor_name: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          created_by?: string
+          department_id?: string
+          description?: string
+          file_path?: string | null
+          id?: string
+          issue_description?: string | null
+          payment_method?: string
+          receipt_date?: string
+          receipt_number?: string
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+          vendor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receipts_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipts_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "financial_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       time_entries: {
         Row: {
@@ -289,6 +536,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_invoice_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_receipt_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_transaction_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       has_role: {
         Args: { _user_id: string; _role: string }
         Returns: boolean

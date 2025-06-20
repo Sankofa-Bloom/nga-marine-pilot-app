@@ -117,7 +117,13 @@ export const useFinance = () => {
       .order('created_at', { ascending: false });
 
     if (data && !error) {
-      setTransactions(data);
+      // Type cast the data to match our interface
+      const typedData = data.map(item => ({
+        ...item,
+        type: item.type as 'income' | 'expense' | 'transfer',
+        status: item.status as 'pending' | 'approved' | 'paid' | 'rejected'
+      }));
+      setTransactions(typedData);
     }
   };
 
@@ -131,7 +137,12 @@ export const useFinance = () => {
       .order('created_at', { ascending: false });
 
     if (data && !error) {
-      setInvoices(data);
+      // Type cast the data to match our interface
+      const typedData = data.map(item => ({
+        ...item,
+        status: item.status as 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+      }));
+      setInvoices(typedData);
     }
   };
 
@@ -145,7 +156,13 @@ export const useFinance = () => {
       .order('created_at', { ascending: false });
 
     if (data && !error) {
-      setReceipts(data);
+      // Type cast the data to match our interface
+      const typedData = data.map(item => ({
+        ...item,
+        payment_method: item.payment_method as 'cash' | 'credit_card' | 'debit_card' | 'bank_transfer' | 'check',
+        status: item.status as 'active' | 'has_issue'
+      }));
+      setReceipts(typedData);
     }
   };
 
@@ -154,10 +171,13 @@ export const useFinance = () => {
 
     setLoading(true);
     try {
+      // Remove fields that shouldn't be included in the insert
+      const { departments, ...insertData } = transactionData as any;
+      
       const { error } = await supabase
         .from('financial_transactions')
         .insert({
-          ...transactionData,
+          ...insertData,
           created_by: user.id
         });
 
@@ -221,10 +241,13 @@ export const useFinance = () => {
 
     setLoading(true);
     try {
+      // Remove fields that shouldn't be included in the insert
+      const { departments, ...insertData } = receiptData as any;
+      
       const { error } = await supabase
         .from('receipts')
         .insert({
-          ...receiptData,
+          ...insertData,
           created_by: user.id
         });
 
